@@ -4,8 +4,8 @@ Aplicação [.NET 5](https://docs.microsoft.com/pt-br/dotnet/core/dotnet-five) W
 Além disso é utilizado o [elmah.io](https://elmah.io) para capturação de erros monitoramento da aplicação a partir de requisições realizadas para as aplicações que consomem a API. Também é utilizado o [Swagger.io](https://swagger.io) para realizar a documentação e versionamento da aplicação.
 
 <figure>
-    <img src="./docs/img/tela-swagger.PNG" alt="swagger" title="Tela do Swagger" />
+    <img src="./docs/Imagens/tela-swagger.PNG" alt="swagger" title="Tela do Swagger" />
 </figure>
 
-Link de hospedagem da aplicação realizada na plataforma [Azure](https://azure.microsoft.com/pt-br/): https://deviowebapi.azurewebsites.net
+Link de hospedagem da aplicação realizada na plataforma [Azure](https://azure.microsoft.com/pt-br/): https://deviowebapi.azurewebsites.net/swagger
 
