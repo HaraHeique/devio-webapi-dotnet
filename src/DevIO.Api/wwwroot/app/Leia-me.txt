@@ -1,0 +1,2 @@
+O foco aqui não é construir nada no front-end. Logo este app em Angular só serve para testar
+os endpoints criados da API através de uma interface (app front-end).
