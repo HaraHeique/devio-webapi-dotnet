@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DevIO.Api.Configurations
@@ -55,14 +56,16 @@ namespace DevIO.Api.Configurations
 
         public static IApplicationBuilder UseWebApiConfig(this IApplicationBuilder app)
         {
+            app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseStaticFiles();
+
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             app.UseEndpoints(endpoints =>
             {
