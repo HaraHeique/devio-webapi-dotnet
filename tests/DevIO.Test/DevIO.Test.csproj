@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\DevIO.Business\DevIO.Business.csproj" />
+    <ProjectReference Include="..\..\src\DevIO.Business\DevIO.Business.csproj" />
   </ItemGroup>
 
 </Project>
