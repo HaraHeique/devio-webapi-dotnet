@@ -22,7 +22,7 @@ namespace DevIO.Business.Validations
                 .Length(8).WithMessage("O campo {PropertyName} precisa ter {MaxLength} caracteres");
 
             RuleFor(c => c.Cidade)
-                .NotEmpty().WithMessage("A campo {PropertyName} precisa ser fornecida")
+                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecida")
                 .Length(2, 100).WithMessage("O campo {PropertyName} precisa ter entre {MinLength} e {MaxLength} caracteres");
 
             RuleFor(c => c.Estado)
