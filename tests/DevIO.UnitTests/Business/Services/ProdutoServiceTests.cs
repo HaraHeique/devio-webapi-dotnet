@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DevIO.Test.Business.Services
+namespace DevIO.UnitTests.Business.Services
 {
     public class ProdutoServiceTests
     {

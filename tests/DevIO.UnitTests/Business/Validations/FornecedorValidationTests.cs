@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace DevIO.Test.Business.Validations
+namespace DevIO.UnitTests.Business.Validations
 {
     public class FornecedorValidationTests
     {
@@ -35,7 +35,7 @@ namespace DevIO.Test.Business.Validations
             Assert.False(validador.IsValid);
             Assert.Equal(msgErroEsperada, validador.Errors.SingleOrDefault()?.ErrorMessage);
         }
-        
+
         [Fact]
         public void Fornecedor_Invalido_Com_Nome_Vazio()
         {
@@ -69,7 +69,7 @@ namespace DevIO.Test.Business.Validations
             Assert.False(validador.IsValid);
             Assert.Contains(msgErroEsperada, validador.Errors.Select(v => v.ErrorMessage));
         }
-        
+
         [Fact]
         public void Fornecedor_Invalido_Com_Nome_Maior_Cem_Caracteres()
         {
@@ -89,7 +89,7 @@ namespace DevIO.Test.Business.Validations
             Assert.False(validador.IsValid);
             Assert.Contains(msgErroEsperada, validador.Errors.Select(v => v.ErrorMessage));
         }
-        
+
         [Theory]
         [InlineData("2694585604")]
         [InlineData("98727809")]
@@ -110,7 +110,7 @@ namespace DevIO.Test.Business.Validations
             Assert.Contains(msgErroEsperada, validador.Errors.Select(v => v.ErrorMessage));
             Assert.Equal(TipoFornecedor.PessoaFisica, fornecedor.TipoFornecedor);
         }
-        
+
         [Theory]
         [InlineData("81381334062")]
         [InlineData("72376637012")]

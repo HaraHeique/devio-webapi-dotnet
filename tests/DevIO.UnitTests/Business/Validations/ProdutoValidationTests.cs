@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace DevIO.Test.Business.Validations
+namespace DevIO.UnitTests.Business.Validations
 {
     public class ProdutoValidationTests
     {

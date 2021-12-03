@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace DevIO.Test.Business.Validations
+namespace DevIO.UnitTests.Business.Validations
 {
     public class EnderecoValidationTests
     {
@@ -234,7 +234,7 @@ namespace DevIO.Test.Business.Validations
             Assert.False(validador.IsValid);
             Assert.Contains(msgErroEsperada, validador.Errors.Select(v => v.ErrorMessage));
         }
-        
+
         [Fact]
         public void Endereco_Invalido_Com_Estado_Vazio()
         {

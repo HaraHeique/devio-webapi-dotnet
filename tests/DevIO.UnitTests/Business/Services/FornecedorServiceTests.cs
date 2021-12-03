@@ -12,7 +12,7 @@ using Xunit;
 using System.Linq.Expressions;
 using System.Linq;
 
-namespace DevIO.Test.Business.Services
+namespace DevIO.UnitTests.Business.Services
 {
     public class FornecedorServiceTests
     {
@@ -96,7 +96,7 @@ namespace DevIO.Test.Business.Services
             // Assert
             Assert.True(_notificador.TemNotificacao());
         }
-        
+
         [Fact]
         public async Task Atualizar_Fornecedor_Invalido_Com_Documento_Repetido()
         {
@@ -146,7 +146,7 @@ namespace DevIO.Test.Business.Services
             // Assert
             Assert.True(_notificador.TemNotificacao());
         }
-        
+
         [Fact]
         public async Task Atualizar_Endereco_Valido()
         {
