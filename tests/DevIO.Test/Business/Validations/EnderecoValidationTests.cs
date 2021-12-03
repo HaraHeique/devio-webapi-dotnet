@@ -53,7 +53,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Logradouro_Menor_Dois_Caracteres()
+        public void Endereco_Invalido_Com_Logradouro_Menor_Dois_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -70,7 +70,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Logradouro_Maior_Duzentos_Caracteres()
+        public void Endereco_Invalido_Com_Logradouro_Maior_Duzentos_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -107,7 +107,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Bairro_Menor_Dois_Caracteres()
+        public void Endereco_Invalido_Com_Bairro_Menor_Dois_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -124,7 +124,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Logradouro_Maior_Cem_Caracteres()
+        public void Endereco_Invalido_Com_Logradouro_Maior_Cem_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -165,7 +165,7 @@ namespace DevIO.Test.Business.Validations
         [InlineData("768058")]
         [InlineData("975476033232")]
         [InlineData("03")]
-        public void Produto_Invalido_Com_Logradouro_Diferente_Oito_Caracteres(string cepInvalido)
+        public void Endereco_Invalido_Com_Logradouro_Diferente_Oito_Caracteres(string cepInvalido)
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -199,7 +199,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Cidade_Menor_Dois_Caracteres()
+        public void Endereco_Invalido_Com_Cidade_Menor_Dois_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -216,7 +216,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Cidade_Maior_Cem_Caracteres()
+        public void Endereco_Invalido_Com_Cidade_Maior_Cem_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -253,7 +253,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Estado_Menor_Dois_Caracteres()
+        public void Endereco_Invalido_Com_Estado_Menor_Dois_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -270,7 +270,7 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Fact]
-        public void Produto_Invalido_Com_Cidade_Maior_Ciquenta_Caracteres()
+        public void Endereco_Invalido_Com_Cidade_Maior_Ciquenta_Caracteres()
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
@@ -304,9 +304,10 @@ namespace DevIO.Test.Business.Validations
         }
 
         [Theory]
+        [InlineData("")]
         [InlineData("123123123123123213463543059849039841239843902894823572309483294893250723")]
         [InlineData("1231231231231232134635430598490398412398439028453136")]
-        public void Produto_Invalido_Com_Numero_Maior_Ciquenta_Caracteres(string enderecoNumeroInvalido)
+        public void Endereco_Invalido_Com_Numero_Maior_Ciquenta_Caracteres(string enderecoNumeroInvalido)
         {
             // Arrange
             Endereco endereco = ObterEnderecoValido();
