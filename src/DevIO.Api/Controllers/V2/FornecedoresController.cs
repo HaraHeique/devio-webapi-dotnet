@@ -40,6 +40,8 @@ namespace DevIO.Api.Controllers.V2
         {
             var fornecedoresVM = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
 
+            var context = HttpContext;
+
             return CustomResponse(fornecedoresVM);
         }
 
