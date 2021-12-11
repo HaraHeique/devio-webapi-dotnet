@@ -2,7 +2,9 @@
 using DevIO.IntegrationTests.Setups.Auth;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Respawn;
 using System;
 using System.Net.Http;
 using Xunit;
@@ -18,12 +20,12 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
         {
             Factory = factory;
             Client = CreateClient();
+            ConfigureReesedDb();
         }
 
         public void Dispose()
         {
-            Client?.Dispose();
-            Factory?.Dispose();
+            // TODO Colocar as liberações de recursos aqui
         }
 
         private HttpClient CreateClient()
@@ -35,6 +37,18 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
                     services.AddSingleton<IPolicyEvaluator, BypassPolicyEvaluator>();
                 });
             }).CreateClient();
+        }
+
+        private void ConfigureReesedDb()
+        {
+            var checkpoint = new Checkpoint
+            {
+                SchemasToInclude = new string[] { "dbo" },
+                TablesToIgnore = new string[] { "__EFMigrationsHistory" },
+                WithReseed = true
+            };
+
+            checkpoint.Reset(Factory.Configuration.GetConnectionString("DefaultConnection")).Wait();
         }
     }
 }
