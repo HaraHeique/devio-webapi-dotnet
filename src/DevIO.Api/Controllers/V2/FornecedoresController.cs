@@ -100,7 +100,7 @@ namespace DevIO.Api.Controllers.V2
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            //if (await _enderecoRepository.Buscar(e => e.Id == id) == null) return NotFound();
+            if (await _enderecoRepository.Buscar(e => e.Id == id) == null) return NotFound();
 
             var endereco = _mapper.Map<Endereco>(enderecoVM);
 
