@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -27,15 +28,22 @@ namespace DevIO.Api.Extensions
 
     public class RequisitoClaimFilter : IAuthorizationFilter
     {
+        private readonly IWebHostEnvironment _env;
+
         private readonly Claim _claim;
 
-        public RequisitoClaimFilter(Claim claim)
+        public RequisitoClaimFilter(IWebHostEnvironment env, Claim claim)
         {
             _claim = claim;
+            _env = env;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            //var env = (IWebHostEnvironment)context.HttpContext.RequestServices.GetService(typeof(IWebHostEnvironment));
+
+            if (!context.HttpContext.User.Claims.Any() && _env.EnvironmentName == "Testing") return;
+
             if (!context.HttpContext.User.Identity.IsAuthenticated)
             {
                 context.Result = new StatusCodeResult(401);
