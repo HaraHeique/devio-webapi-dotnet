@@ -63,7 +63,7 @@ namespace DevIO.Api.Controllers.V2
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        //[ClaimsAuthorize("Fornecedor", "Adicionar")]
+        [ClaimsAuthorize("Fornecedor", "Adicionar")]
         public async Task<ActionResult<FornecedorViewModel>> Adicionar([FromBody] FornecedorViewModel fornecedorVM)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
@@ -76,7 +76,7 @@ namespace DevIO.Api.Controllers.V2
         }
 
         [HttpPut("{id:guid}")]
-        //[ClaimsAuthorize("Fornecedor", "Atualizar")]
+        [ClaimsAuthorize("Fornecedor", "Atualizar")]
         public async Task<ActionResult<FornecedorViewModel>> Atualizar([FromRoute] Guid id, [FromBody] FornecedorViewModel fornecedorVM)
         {
             if (id != fornecedorVM.Id) return CustomErrorResponse("O ID informado não é o mesmo que foi passado na rota!");
@@ -93,7 +93,7 @@ namespace DevIO.Api.Controllers.V2
         }
 
         [HttpPut("atualizar-endereco/{id:guid}")]
-        //[ClaimsAuthorize("Fornecedor", "Atualizar")]
+        [ClaimsAuthorize("Fornecedor", "Atualizar")]
         public async Task<ActionResult<EnderecoViewModel>> AtualizarEndereco([FromRoute] Guid id, [FromBody] EnderecoViewModel enderecoVM)
         {
             if (id != enderecoVM.Id) return CustomErrorResponse("O ID informado não é o mesmo que foi passado na rota!");
@@ -110,7 +110,7 @@ namespace DevIO.Api.Controllers.V2
         }
 
         [HttpDelete("{id:guid}")]
-        //[ClaimsAuthorize("Fornecedor", "Excluir")]
+        [ClaimsAuthorize("Fornecedor", "Excluir")]
         public async Task<IActionResult> Remover([FromRoute] Guid id)
         {
             var fornecedorVM = await ObterFornecedorEndereco(id);
