@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Models;
+using System;
 
 namespace DevIO.Api.Configurations
 {
@@ -8,6 +9,19 @@ namespace DevIO.Api.Configurations
     {
         public AutoMapperConfig()
         {
+            // Commons
+            CreateMap<string, Guid>()
+                .ConvertUsing(x => string.IsNullOrEmpty(x) ? Guid.NewGuid() : Guid.Parse(x));
+
+            CreateMap<string, Guid?>()
+                .ConvertUsing(x => string.IsNullOrEmpty(x) ? (Guid?)null : Guid.Parse(x));
+
+            CreateMap<Guid, string>()
+                .ConvertUsing(x => Convert.ToString(x));
+
+            CreateMap<Guid, Guid>()
+                .ConvertUsing(x => x == Guid.Empty ? Guid.NewGuid() : x);
+
             // Both
             CreateMap<Fornecedor, FornecedorViewModel>().ReverseMap();
             CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
