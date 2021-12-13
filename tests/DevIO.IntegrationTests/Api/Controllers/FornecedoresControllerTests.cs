@@ -148,7 +148,6 @@ namespace DevIO.IntegrationTests.Api.Controllers
         {
             // Arrange
             FornecedorViewModel fornecedorVM = FornecedorViewModelTestsHelper.ObterInstancia(1, "92076602020");
-
             await AdicionarObjsParaTestes(fornecedorVM);
 
             fornecedorVM.Nome = "Produto Teste com proriedades inválidas";
