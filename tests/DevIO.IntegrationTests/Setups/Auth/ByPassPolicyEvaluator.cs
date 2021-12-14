@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace DevIO.IntegrationTests.Setups.Auth
 {
-    public class FakePolicyEvaluator : IPolicyEvaluator
+    public class BypassPolicyEvaluator : IPolicyEvaluator
     {
         public virtual async Task<AuthenticateResult> AuthenticateAsync(AuthorizationPolicy policy, HttpContext context)
         {
+            // Always pass authentication
             var principal = new ClaimsPrincipal();
 
             principal.AddIdentity(new ClaimsIdentity(Array.Empty<Claim>(), "FakeScheme"));
@@ -23,6 +24,7 @@ namespace DevIO.IntegrationTests.Setups.Auth
 
         public virtual async Task<PolicyAuthorizationResult> AuthorizeAsync(AuthorizationPolicy policy, AuthenticateResult authenticationResult, HttpContext context, object resource)
         {
+            // Always pass authorization
             return await Task.FromResult(PolicyAuthorizationResult.Success());
         }
     }

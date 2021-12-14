@@ -269,3 +269,7 @@ __pycache__/
 
 # Images from wwwroot
 src/DevIO.Api/wwwroot/img/*
+
+# Temp files tests
+tests/DevIO.IntegrationTests/TempFiles/*
+!tests/DevIO.IntegrationTests/TempFiles/.gitkeep

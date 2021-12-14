@@ -6,6 +6,7 @@ using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Interfaces.Services;
 using DevIO.Business.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -23,15 +24,18 @@ namespace DevIO.Api.Controllers.V2
         private readonly IProdutoRepository _produtoRepository;
         private readonly IProdutoService _produtoService;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _env;
 
         public ProdutosController(INotificador notificador,
                                   IProdutoRepository produtoRepository,
                                   IProdutoService produtoService,
-                                  IMapper mapper) : base(notificador)
+                                  IMapper mapper,
+                                  IWebHostEnvironment env) : base(notificador)
         {
             _produtoRepository = produtoRepository;
             _produtoService = produtoService;
             _mapper = mapper;
+            _env = env;
         }
 
         [HttpGet]
@@ -170,7 +174,7 @@ namespace DevIO.Api.Controllers.V2
             }
 
             byte[] imagemBytes = Convert.FromBase64String(arquivo);
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imgNome);
+            string filePath = Path.Combine(_env.WebRootPath, "img", imgNome);
 
             if (System.IO.File.Exists(filePath))
             {
@@ -192,7 +196,7 @@ namespace DevIO.Api.Controllers.V2
             }
 
             string imgNome = imgPrefixo + arquivo.FileName;
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imgNome);
+            var filePath = Path.Combine(_env.WebRootPath, "img", imgNome);
 
             if (System.IO.File.Exists(filePath))
             {
@@ -212,7 +216,7 @@ namespace DevIO.Api.Controllers.V2
         {
             if (string.IsNullOrEmpty(imgNome)) return await Task.FromResult(true);
 
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imgNome);
+            string path = Path.Combine(_env.WebRootPath, "img", imgNome);
 
             if (!System.IO.File.Exists(path))
             {

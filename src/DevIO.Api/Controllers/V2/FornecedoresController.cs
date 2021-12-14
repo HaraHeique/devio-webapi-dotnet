@@ -40,8 +40,6 @@ namespace DevIO.Api.Controllers.V2
         {
             var fornecedoresVM = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
 
-            var context = HttpContext;
-
             return CustomResponse(fornecedoresVM);
         }
 
@@ -101,6 +99,8 @@ namespace DevIO.Api.Controllers.V2
             if (id != enderecoVM.Id) return CustomErrorResponse("O ID informado não é o mesmo que foi passado na rota!");
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            if (await _enderecoRepository.Buscar(e => e.Id == id) == null) return NotFound();
 
             var endereco = _mapper.Map<Endereco>(enderecoVM);
 
