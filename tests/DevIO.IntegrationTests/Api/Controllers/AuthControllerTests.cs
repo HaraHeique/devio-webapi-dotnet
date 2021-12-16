@@ -169,9 +169,9 @@ namespace DevIO.IntegrationTests.Api.Controllers
                 EmailConfirmed = true
             };
 
-            using var scope = base.Factory.Services.CreateScope();
+            using IServiceScope scope = base.Factory.Services.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var result = await userManager.CreateAsync(user, registroVM.Password);
+            await userManager.CreateAsync(user, registroVM.Password);
         }
     }
 }
