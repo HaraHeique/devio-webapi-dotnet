@@ -6,7 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Respawn;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
 using Xunit;
 
 namespace DevIO.IntegrationTests.Setups.Fixtures
@@ -16,10 +18,10 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
         protected readonly ApiWebApplicationFactory<Startup> Factory;
         protected readonly HttpClient Client;
 
-        public IntegrationTestsFixture(ApiWebApplicationFactory<Startup> factory)
+        public IntegrationTestsFixture(ApiWebApplicationFactory<Startup> factory, bool ignoreAuth = true)
         {
             Factory = factory;
-            Client = CreateClient();
+            Client = ignoreAuth ? CreateClient() : CreateClient(DefaultAuthUser());
             ConfigureReesedDb();
         }
 
@@ -28,13 +30,21 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             // TODO Colocar as liberações de recursos aqui
         }
 
-        private HttpClient CreateClient()
+        protected HttpClient CreateClient(AuthUserTest authUser = null)
         {
             return Factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddSingleton<IPolicyEvaluator, BypassPolicyEvaluator>();
+                    if (authUser == null)
+                    {
+                        services.AddSingleton<IPolicyEvaluator, BypassPolicyEvaluator>();
+                    }
+                    else
+                    {
+                        services.AddTestAuthenticationConfig(); // Custom handler criado
+                        services.AddScoped(_ => authUser); // Mock de usuário de teste injetado por DI
+                    }
                 });
             }).CreateClient();
         }
@@ -49,6 +59,14 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             };
 
             checkpoint.Reset(Factory.Configuration.GetConnectionString("DefaultConnection")).Wait();
+        }
+
+        private static AuthUserTest DefaultAuthUser()
+        {
+            return new AuthUserTest(
+                new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, "default.user@test.com")
+            );
         }
     }
 }
