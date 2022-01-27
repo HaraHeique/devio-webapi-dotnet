@@ -81,6 +81,7 @@ namespace DevIO.Api.Extensions
             foreach (string userRole in userRoles)
             {
                 claims.Add(new Claim("role", userRole));
+                //claims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
             var identityClaims = new ClaimsIdentity();
