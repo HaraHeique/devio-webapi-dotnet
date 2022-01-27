@@ -6,7 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Respawn;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using Xunit;
@@ -18,10 +20,10 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
         protected readonly ApiWebApplicationFactory<Startup> Factory;
         protected readonly HttpClient Client;
 
-        public IntegrationTestsFixture(ApiWebApplicationFactory<Startup> factory, bool ignoreAuth = true)
+        public IntegrationTestsFixture(ApiWebApplicationFactory<Startup> factory)
         {
             Factory = factory;
-            Client = ignoreAuth ? CreateClient() : CreateClient(DefaultAuthUser());
+            Client = CreateClient();
             ConfigureReesedDb();
         }
 
@@ -59,14 +61,6 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             };
 
             checkpoint.Reset(Factory.Configuration.GetConnectionString("DefaultConnection")).Wait();
-        }
-
-        private static AuthUserTest DefaultAuthUser()
-        {
-            return new AuthUserTest(
-                new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, "default.user@test.com")
-            );
         }
     }
 }

@@ -2,12 +2,14 @@
 using DevIO.Api.ViewModels;
 using DevIO.Api.ViewModels.Users;
 using DevIO.IntegrationTests.Helpers;
+using DevIO.IntegrationTests.Setups.Auth;
 using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,13 +21,25 @@ namespace DevIO.IntegrationTests.Api.Controllers
 
         public AuthControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) { }
 
-        [Fact(Skip = "Sem autenticação do usuário dá erro.")]
+        [Fact]
         public async Task Obter_Usuario_Corrente_Com_Sucesso()
         {
             // Arrange
+            RegisterUserViewModel usuarioRegistradoVM = UserViewModelTestsHelper.ObterInstanciaRegistroUsuario("default.user@test.com", "Dale@2020");
+
+            await RegistrarUsuarioParaTestes(usuarioRegistradoVM);
+
+            using IServiceScope scope = base.Factory.Services.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            string usuarioRegistradoId = (await userManager.FindByEmailAsync(usuarioRegistradoVM.Email)).Id;
+
+            var userClaims = new AuthUserTest(
+                new Claim(ClaimTypes.NameIdentifier, usuarioRegistradoId),
+                new Claim(ClaimTypes.Email, usuarioRegistradoVM.Email)
+            );
 
             // Act
-            HttpResponseMessage response = await base.Client.GetAsync($"{CommonUri}/obter-usuario-corrente");
+            HttpResponseMessage response = await base.CreateClient(userClaims).GetAsync($"{CommonUri}/obter-usuario-corrente");
 
             // Assert
             var result = await ContentHelper.ExtractObject<CurrentUserViewModel>(response.Content);
