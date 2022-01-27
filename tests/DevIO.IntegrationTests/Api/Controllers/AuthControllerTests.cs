@@ -6,6 +6,7 @@ using DevIO.IntegrationTests.Setups.Auth;
 using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,11 +16,24 @@ using Xunit;
 
 namespace DevIO.IntegrationTests.Api.Controllers
 {
-    public class AuthControllerTests : IntegrationTestsFixture
+    public class AuthControllerTests : IntegrationTestsFixture, IDisposable
     {
         private const string CommonUri = "api/v2/conta";
 
-        public AuthControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) { }
+        private readonly IServiceScope _scope;
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public AuthControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) 
+        {
+            _scope = base.Factory.Services.CreateScope();
+            _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        }
+
+        public void Dispose()
+        {
+            _userManager.Dispose();
+            _scope.Dispose();
+        }
 
         [Fact]
         public async Task Obter_Usuario_Corrente_Com_Sucesso()
@@ -29,9 +43,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
 
             await RegistrarUsuarioParaTestes(usuarioRegistradoVM);
 
-            using IServiceScope scope = base.Factory.Services.CreateScope();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            string usuarioRegistradoId = (await userManager.FindByEmailAsync(usuarioRegistradoVM.Email)).Id;
+            string usuarioRegistradoId = (await _userManager.FindByEmailAsync(usuarioRegistradoVM.Email)).Id;
 
             var userClaims = new AuthUserTest(
                 new Claim(ClaimTypes.NameIdentifier, usuarioRegistradoId),
@@ -60,12 +72,10 @@ namespace DevIO.IntegrationTests.Api.Controllers
             HttpResponseMessage response = await base.Client.PostAsync($"{CommonUri}/registrar", dataRequest);
 
             // Assert
-            using var userManager = (UserManager<IdentityUser>)base.Factory.Services.GetService(typeof(UserManager<IdentityUser>));
-
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Single(userManager.Users.ToList());
-            Assert.Contains(userManager.Users.ToList(), u => u.Email == "hsantos@otimize.io");
+            Assert.Single(_userManager.Users.ToList());
+            Assert.Contains(_userManager.Users.ToList(), u => u.Email == "hsantos@otimize.io");
         }
         
         [Theory]
@@ -81,11 +91,9 @@ namespace DevIO.IntegrationTests.Api.Controllers
             HttpResponseMessage response = await base.Client.PostAsync($"{CommonUri}/registrar", dataRequest);
 
             // Assert
-            using var userManager = (UserManager<IdentityUser>)base.Factory.Services.GetService(typeof(UserManager<IdentityUser>));
-
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Empty(userManager.Users.ToList());
+            Assert.Empty(_userManager.Users.ToList());
         }
 
         [Fact]
@@ -105,11 +113,9 @@ namespace DevIO.IntegrationTests.Api.Controllers
             HttpResponseMessage response = await base.Client.PostAsync($"{CommonUri}/entrar", dataRequest);
 
             // Assert
-            using var userManager = (UserManager<IdentityUser>)base.Factory.Services.GetService(typeof(UserManager<IdentityUser>));
-
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Contains(userManager.Users.ToList(), u => u.Email == email);
+            Assert.Contains(_userManager.Users.ToList(), u => u.Email == email);
         }
         
         [Fact]
@@ -183,9 +189,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
                 EmailConfirmed = true
             };
 
-            using IServiceScope scope = base.Factory.Services.CreateScope();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            await userManager.CreateAsync(user, registroVM.Password);
+            await _userManager.CreateAsync(user, registroVM.Password);
         }
     }
 }

@@ -5,17 +5,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Respawn;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
 using Xunit;
 
 namespace DevIO.IntegrationTests.Setups.Fixtures
 {
-    public abstract class IntegrationTestsFixture : IDisposable, IClassFixture<ApiWebApplicationFactory<Startup>>
+    public abstract class IntegrationTestsFixture : IClassFixture<ApiWebApplicationFactory<Startup>>
     {
         protected readonly ApiWebApplicationFactory<Startup> Factory;
         protected readonly HttpClient Client;
@@ -25,11 +20,6 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             Factory = factory;
             Client = CreateClient();
             ConfigureReesedDb();
-        }
-
-        public void Dispose()
-        {
-            // TODO Colocar as liberações de recursos aqui
         }
 
         protected HttpClient CreateClient(AuthUserTest authUser = null)
