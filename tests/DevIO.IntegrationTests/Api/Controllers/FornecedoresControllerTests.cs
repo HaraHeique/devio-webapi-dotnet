@@ -4,11 +4,13 @@ using DevIO.Api.ViewModels;
 using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Models;
 using DevIO.IntegrationTests.Helpers;
+using DevIO.IntegrationTests.Setups.Auth;
 using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -35,7 +37,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
             var request = new HttpRequestMessage(HttpMethod.Get, CommonUri);
 
             // Act
-            HttpResponseMessage response = await base.Client.SendAsync(request);
+            HttpResponseMessage response = await base.CreateClient().SendAsync(request);
 
             // Assert
             var result = await ContentHelper.ExtractObject<ResponseViewModel>(response.Content);
@@ -91,8 +93,13 @@ namespace DevIO.IntegrationTests.Api.Controllers
             FornecedorViewModel fornecedorVM = FornecedorViewModelTestsHelper.ObterInstancia(1, "64307756070");
             HttpContent dataRequest = ContentHelper.CreateJsonContent(fornecedorVM);
 
+            var userClaims = new AuthUserTest(
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim("Fornecedor", "Adicionar")
+            );
+
             // Act
-            HttpResponseMessage response = await base.Client.PostAsync(CommonUri, dataRequest);
+            HttpResponseMessage response = await base.CreateClient(userClaims).PostAsync(CommonUri, dataRequest);
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
@@ -133,8 +140,12 @@ namespace DevIO.IntegrationTests.Api.Controllers
 
             HttpContent dataRequest = ContentHelper.CreateJsonContent(fornecedorVM);
 
+            var userClaims = new AuthUserTest(
+                new Claim("Fornecedor", "Atualizar")
+            );
+
             // Act
-            HttpResponseMessage response = await base.Client.PutAsync($"{CommonUri}/{fornecedorId}", dataRequest);
+            HttpResponseMessage response = await base.CreateClient(userClaims).PutAsync($"{CommonUri}/{fornecedorId}", dataRequest);
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
@@ -298,8 +309,12 @@ namespace DevIO.IntegrationTests.Api.Controllers
 
             await AdicionarObjsParaTestes(fornecedorVM);
 
+            var userClaims = new AuthUserTest(
+                new Claim("Fornecedor", "Excluir")
+            );
+
             // Act
-            HttpResponseMessage response = await base.Client.DeleteAsync($"{CommonUri}/{fornecedorVM.Id}");
+            HttpResponseMessage response = await base.CreateClient(userClaims).DeleteAsync($"{CommonUri}/{fornecedorVM.Id}");
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
