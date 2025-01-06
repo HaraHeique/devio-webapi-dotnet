@@ -1,10 +1,10 @@
-﻿using DevIO.Api.Extensions;
+﻿using Asp.Versioning;
+using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels.Users;
 using DevIO.Business.Interfaces.Notifications;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -41,16 +41,17 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             }).CreateClient();
         }
 
-        private void ConfigureReesedDb()
+        private async void ConfigureReesedDb()
         {
-            var checkpoint = new Checkpoint
+            var connectionString = Factory.Configuration.GetConnectionString("DefaultConnection");
+            var respawner = await Respawner.CreateAsync(connectionString, new RespawnerOptions
             {
-                SchemasToInclude = new string[] { "dbo" },
-                TablesToIgnore = new string[] { "__EFMigrationsHistory" },
+                SchemasToInclude = ["dbo"],
+                TablesToIgnore = ["__EFMigrationsHistory"],
                 WithReseed = true
-            };
+            });
 
-            checkpoint.Reset(Factory.Configuration.GetConnectionString("DefaultConnection")).Wait();
+            await respawner.ResetAsync(connectionString);
         }
     }
 }

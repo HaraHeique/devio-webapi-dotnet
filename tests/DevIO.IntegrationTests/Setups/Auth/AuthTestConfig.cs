@@ -8,7 +8,7 @@ namespace DevIO.IntegrationTests.Setups.Auth
     {
         public static IServiceCollection AddTestAuthenticationConfig(this IServiceCollection services)
         {
-            // Configuração da autenticação
+            // Configuração da autorização
             services.AddAuthorization(opts => 
             {
                 opts.DefaultPolicy = new AuthorizationPolicyBuilder(AuthConstants.DefaultScheme)
@@ -16,7 +16,7 @@ namespace DevIO.IntegrationTests.Setups.Auth
                     .Build();
             });
 
-            // Configuração da autorização (registro do authentication handler criado (customizado))
+            // Configuração da autenticação (registro do authentication handler criado (customizado))
             services.AddAuthentication(AuthConstants.DefaultScheme)
                 .AddScheme<AuthenticationSchemeOptions, IntegrationTestsAuthHandler>(AuthConstants.DefaultScheme, opts => { });
 

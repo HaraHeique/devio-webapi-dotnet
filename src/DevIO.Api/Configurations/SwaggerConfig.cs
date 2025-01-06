@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
@@ -102,7 +103,7 @@ namespace DevIO.Api.Configurations
         {
             string obsoleta = description.IsDeprecated ? "<b>Esta versão está obsoleta!</b>" : string.Empty;
 
-            return $"API REST ASP.NET 5 WebAPI. {obsoleta}";
+            return $"API REST ASP.NET WebAPI. {obsoleta}";
         }
     }
 

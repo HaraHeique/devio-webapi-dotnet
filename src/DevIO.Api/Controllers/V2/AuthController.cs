@@ -1,4 +1,5 @@
-﻿using DevIO.Api.Extensions;
+﻿using Asp.Versioning;
+using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels.Users;
 using DevIO.Business.Interfaces.Identity;
 using DevIO.Business.Interfaces.Notifications;

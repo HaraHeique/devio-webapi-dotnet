@@ -29,9 +29,10 @@ namespace DevIO.Api.Extensions
 
         private static void HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
             // Enviar o erro para o log do server do elmaio
             exception.Ship(context);
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HealthChecks.UI.Client;
+﻿using Asp.Versioning;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,19 @@ namespace DevIO.Api.Configurations
             // Remoção do próprio ASP.NET CORE de validar automaticamente (bom para quem quer ter retornos customizados)
             services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 
-            // Versionamento da API
+            // Versionamento da API (https://www.milanjovanovic.tech/blog/api-versioning-in-aspnetcore)
             services.AddApiVersioning(opt =>
             {
                 opt.AssumeDefaultVersionWhenUnspecified = true;
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
                 opt.ReportApiVersions = true;
-            });
-
-            services.AddVersionedApiExplorer(opt =>
+                opt.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader("X-Api-Version")
+                );
+            })
+            .AddMvc()  // This is needed for controllers
+            .AddApiExplorer(opt =>
             {
                 opt.GroupNameFormat = "'v'VVV";
                 opt.SubstituteApiVersionInUrl = true;
