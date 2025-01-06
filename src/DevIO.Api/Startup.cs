@@ -1,3 +1,4 @@
+using Asp.Versioning.ApiExplorer;
 using AutoMapper;
 using DevIO.Api.Configurations;
 using DevIO.Api.Extensions;
