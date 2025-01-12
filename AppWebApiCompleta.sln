@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-requests", "api-requests", "{65E2A3D6-7B1C-4F36-BAAA-988ABA37DF97}"
 	ProjectSection(SolutionItems) = preProject
-		auth-requests.http = auth-requests.http
-		http-client.env.json = http-client.env.json
-		fornecedores-requests.http = fornecedores-requests.http
+		docs\HttpFiles\auth-requests.http = docs\HttpFiles\auth-requests.http
+		docs\HttpFiles\fornecedores-requests.http = docs\HttpFiles\fornecedores-requests.http
+		docs\HttpFiles\http-client.env.json = docs\HttpFiles\http-client.env.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevIO.Business", "src\DevIO.Business\DevIO.Business.csproj", "{8780F0BC-6FED-495D-86A8-4CB8A9EB2316}"
