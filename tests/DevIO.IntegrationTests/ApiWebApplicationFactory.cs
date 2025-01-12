@@ -1,6 +1,5 @@
 ﻿using DevIO.Api.Data;
 using DevIO.Data.Context;
-using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -18,6 +17,7 @@ namespace DevIO.IntegrationTests
     {
         private readonly MsSqlContainer _sqlServerContainer;
 
+        public const string EnvironmentName = "Testing"; 
         public IConfiguration Configuration { get; private set; }
         public IWebHostEnvironment Env { get; private set; }
 
@@ -34,7 +34,7 @@ namespace DevIO.IntegrationTests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseEnvironment("Testing");
+            builder.UseEnvironment(EnvironmentName);
 
             builder.ConfigureAppConfiguration((context, config) =>
             {
