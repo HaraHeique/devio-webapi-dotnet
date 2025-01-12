@@ -1,0 +1,28 @@
+@Path = conta
+
+### GET - Obter usuario corrente logado
+GET {{HostAddress}}/{{ApiPath}}/{{Version2}}/{{Path}}/obter-usuario-corrente
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{BearerToken}}
+
+### POST - Registrar novo usuário
+POST {{HostAddress}}/{{ApiPath}}/{{Version2}}/{{Path}}/registrar HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "hara.heique@gmail.com",
+  "password": "Teste@123",
+  "confirmPassword": "Teste@123"
+}
+
+### POST - Logar usuário existente
+POST {{HostAddress}}/{{ApiPath}}/{{Version2}}/{{Path}}/entrar
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "hara.heique@gmail.com",
+  "password": "Teste@123"
+}

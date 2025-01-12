@@ -1,0 +1,28 @@
+@Path = fornecedores
+
+### GET - Obter lista de fornecedores
+GET {{HostAddress}}/{{ApiPath}}/{{Version2}}/{{Path}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{BearerToken}}
+
+### POST - Criar um novo fornecedor
+POST {{HostAddress}}/{{ApiPath}}/{{Version2}}/{{Path}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+  "nome": "Joaquin serviços",
+  "documento": "234102492012",
+  "tipoFornecedor": 0,
+  "endereco": {
+    "logradouro": "Rua Tancredo Neves 2795",
+    "numero": "265",
+    "complemento": "Atrás daquele local",
+    "bairro": "Agreste",
+    "cep": "68920970",
+    "cidade": "Laranjal do Jari",
+    "estado": "AP"
+  }
+}
