@@ -1,5 +1,4 @@
-﻿using DevIO.Api;
-using DevIO.Api.ViewModels;
+﻿using DevIO.Api.ViewModels;
 using DevIO.Api.ViewModels.Users;
 using DevIO.IntegrationTests.Helpers;
 using DevIO.IntegrationTests.Setups.Auth;
@@ -16,6 +15,7 @@ using Xunit;
 
 namespace DevIO.IntegrationTests.Api.Controllers
 {
+    [Collection(nameof(InfraSingleInstanceCollection))]
     public class AuthControllerTests : IntegrationTestsFixture, IDisposable
     {
         private const string CommonUri = "api/v2/conta";
@@ -23,7 +23,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
         private readonly IServiceScope _scope;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) 
+        public AuthControllerTests(ApiWebApplicationFactory factory) : base(factory) 
         {
             _scope = base.Factory.Services.CreateScope();
             _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();

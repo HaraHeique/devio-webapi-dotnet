@@ -1,25 +1,27 @@
-﻿using DevIO.Api;
-using DevIO.IntegrationTests.Setups.Auth;
+﻿using DevIO.IntegrationTests.Setups.Auth;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Respawn;
 using System.Net.Http;
+using System.Threading;
 using Xunit;
 
 namespace DevIO.IntegrationTests.Setups.Fixtures
 {
-    public abstract class IntegrationTestsFixture : IClassFixture<ApiWebApplicationFactory<Startup>>
+    [Collection(nameof(InfraSingleInstanceCollection))]
+    public abstract class IntegrationTestsFixture //: IClassFixture<ApiWebApplicationFactory> (para cada instancia da class que a herda)
     {
-        protected readonly ApiWebApplicationFactory<Startup> Factory;
+        protected readonly ApiWebApplicationFactory Factory;
         protected readonly HttpClient Client;
 
-        public IntegrationTestsFixture(ApiWebApplicationFactory<Startup> factory)
+        public IntegrationTestsFixture(ApiWebApplicationFactory factory)
         {
             Factory = factory;
             Client = CreateClient();
-            ConfigureReesedDb();
+            ReseedDatabase();
+
+            WaitFor(1); // Existe por conta do ReseedDb acima ser assíncrono
         }
 
         protected HttpClient CreateClient(AuthUserTest authUser = null)
@@ -41,9 +43,10 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
             }).CreateClient();
         }
 
-        private async void ConfigureReesedDb()
+        private async void ReseedDatabase()
         {
-            var connectionString = Factory.Configuration.GetConnectionString("DefaultConnection");
+            //var connectionString = Factory.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Factory.ConnectionString;
             var respawner = await Respawner.CreateAsync(connectionString, new RespawnerOptions
             {
                 SchemasToInclude = ["dbo"],
@@ -53,5 +56,7 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
 
             await respawner.ResetAsync(connectionString);
         }
+
+        private static void WaitFor(double seconds) => Thread.Sleep((int)seconds * 1000);
     }
 }

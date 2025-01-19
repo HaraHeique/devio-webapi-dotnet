@@ -1,11 +1,9 @@
 using Asp.Versioning.ApiExplorer;
-using AutoMapper;
 using DevIO.Api.Configurations;
 using DevIO.Api.Extensions;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

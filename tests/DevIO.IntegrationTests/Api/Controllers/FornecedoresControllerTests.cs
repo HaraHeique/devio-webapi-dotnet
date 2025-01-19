@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DevIO.Api;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Models;
@@ -23,7 +22,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
         private IFornecedorRepository _fornecedorRepository;
         private IMapper _mapper;
 
-        public FornecedoresControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) { }
+        public FornecedoresControllerTests(ApiWebApplicationFactory factory) : base(factory) { }
 
         [Fact]
         public async Task Obter_Todos_Fornecedores_Com_Sucesso()
@@ -127,6 +126,8 @@ namespace DevIO.IntegrationTests.Api.Controllers
         [Fact]
         public async Task Atualizar_Fornecedor_Com_Sucesso()
         {
+            //System.Threading.Thread.Sleep(1000);
+
             // Arrange
             FornecedorViewModel fornecedorVM = FornecedorViewModelTestsHelper.ObterInstancia(1, "92076602020");
             Guid fornecedorId = fornecedorVM.Id;

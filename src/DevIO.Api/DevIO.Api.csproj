@@ -21,7 +21,7 @@
     <PackageReference Include="Elmah.Io.AspNetCore" Version="5.2.79" />
     <PackageReference Include="Elmah.Io.AspNetCore.HealthChecks" Version="5.2.79" />
     <PackageReference Include="Elmah.Io.Extensions.Logging" Version="5.2.58" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
@@ -37,10 +37,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DevIO.Business\DevIO.Business.csproj" />
     <ProjectReference Include="..\DevIO.Data\DevIO.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\img\" />
   </ItemGroup>
 
 </Project>

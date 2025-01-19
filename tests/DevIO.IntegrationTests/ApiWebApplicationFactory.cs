@@ -1,4 +1,6 @@
-﻿using DevIO.Api.Data;
+﻿using DevIO.Api;
+using DevIO.Api.Configurations;
+using DevIO.Api.Data;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,16 +15,19 @@ using Xunit;
 
 namespace DevIO.IntegrationTests
 {
-    public class ApiWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class, IAsyncLifetime
+    public class ApiWebApplicationFactory : WebApplicationFactory<Startup>, IAsyncLifetime
     {
         private readonly MsSqlContainer _sqlServerContainer;
 
-        public const string EnvironmentName = "Testing"; 
+        public const string EnvironmentName = "Testing";
+
+        public string ConnectionString => _sqlServerContainer.GetConnectionString();
         public IConfiguration Configuration { get; private set; }
         public IWebHostEnvironment Env { get; private set; }
 
         public ApiWebApplicationFactory()
         {
+            // Para mais infos aqui: https://www.milanjovanovic.tech/blog/testcontainers-integration-testing-using-docker-in-dotnet
             _sqlServerContainer = new MsSqlBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithName("app-web-api-completa-database")
@@ -44,21 +49,30 @@ namespace DevIO.IntegrationTests
 
             builder.ConfigureTestServices(services => 
             {
-                var descriptors = services.Where(s => s.ServiceType == typeof(DbContextOptions<AppDataContext>) || s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                var descriptors = services
+                    .Where(s => s.ServiceType == typeof(DbContextOptions<AppDataContext>) || s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>))
+                    .ToList();   
 
                 foreach (var item in descriptors) services.Remove(item);
 
-                services.AddDbContext<AppDataContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()));
-                services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()));
+                services
+                    .AddDbContext<AppDataContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()))
+                    .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()));
+
+                services.RunMigrations();
             });
         }
 
         public async Task InitializeAsync()
         {
             await _sqlServerContainer.StartAsync();
+
+            // Posso também ler um script da base e montar a base dela
+            //var migrationSql = await System.IO.File.ReadAllTextAsync("migration_aqui.sql");
+            //await _sqlServerContainer.ExecScriptAsync(migrationSql);
         }
 
-        public async Task DisposeAsync()
+        public async new Task DisposeAsync()
         {
             await _sqlServerContainer.StopAsync();
         }
