@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DevIO.Api;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Models;
@@ -20,7 +19,7 @@ namespace DevIO.IntegrationTests.Api.Controllers
     {
         private const string CommonUri = "api/v2/produtos";
 
-        public ProdutosControllerTests(ApiWebApplicationFactory<Startup> factory) : base(factory) { }
+        public ProdutosControllerTests(ApiWebApplicationFactory factory) : base(factory) { }
 
         [Fact]
         public async Task Obter_Todos_Produtos_Com_Sucesso()
