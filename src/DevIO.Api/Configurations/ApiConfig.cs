@@ -77,20 +77,20 @@ namespace DevIO.Api.Configurations
                 endpoints.MapControllers();
 
                 // HealthChecks route configuration
-                endpoints.MapHealthChecks("/api/hc", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-                endpoints.MapHealthChecksUI(options =>
-                {
-                    options.UIPath = "/api/hc-ui";
-                    options.ResourcesPath = "/api/hc-ui-resources";
+                //endpoints.MapHealthChecks("/api/hc", new HealthCheckOptions()
+                //{
+                //    Predicate = _ => true,
+                //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //});
+                //endpoints.MapHealthChecksUI(options =>
+                //{
+                //    options.UIPath = "/api/hc-ui";
+                //    options.ResourcesPath = "/api/hc-ui-resources";
 
-                    options.UseRelativeApiPath = false;
-                    options.UseRelativeResourcesPath = false;
-                    options.UseRelativeWebhookPath = false;
-                });
+                //    options.UseRelativeApiPath = false;
+                //    options.UseRelativeResourcesPath = false;
+                //    options.UseRelativeWebhookPath = false;
+                //});
             });
 
             return app;

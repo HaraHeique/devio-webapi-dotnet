@@ -15,7 +15,7 @@ using Xunit;
 
 namespace DevIO.IntegrationTests
 {
-    public class ApiWebApplicationFactory : WebApplicationFactory<Startup>, IAsyncLifetime
+    public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         private readonly MsSqlContainer _sqlServerContainer;
 

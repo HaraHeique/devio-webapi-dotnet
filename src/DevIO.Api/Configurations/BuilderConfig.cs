@@ -16,7 +16,7 @@ namespace DevIO.Api.Configurations
 
             if (hostingEnvironment.IsProduction())
             {
-                builder.AddUserSecrets<Startup>();
+                builder.AddUserSecrets<Program>();
             }
 
             return builder.Build();

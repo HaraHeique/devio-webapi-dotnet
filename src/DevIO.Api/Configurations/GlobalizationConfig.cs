@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace DevIO.Api.Configurations
@@ -14,8 +13,8 @@ namespace DevIO.Api.Configurations
             var localizationOptions = new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture(defaultCulture),
-                SupportedCultures = new List<CultureInfo> { defaultCulture },
-                SupportedUICultures = new List<CultureInfo> { defaultCulture }
+                SupportedCultures = [defaultCulture],
+                SupportedUICultures = [defaultCulture]
             };
 
             //CultureInfo.DefaultThreadCurrentCulture = defaultCulture;

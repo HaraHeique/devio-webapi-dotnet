@@ -22,9 +22,6 @@ namespace DevIO.Api.Configurations
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUser, AspNetUser>();
 
-            // Api - Swagger
-            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-
             // Business - Notifications
             services.AddScoped<INotificador, Notificador>();
 

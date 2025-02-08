@@ -9,54 +9,53 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace DevIO.Api
+namespace DevIO.Api;
+
+public static class Startup
 {
-    public class Startup
+    private const string ConnectionStringKey = "DefaultConnection";
+
+    public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        public Startup(IWebHostEnvironment env)
+        services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(configuration.GetConnectionString(ConnectionStringKey)));
+
+        services.AddIdentityConfig(configuration);
+
+        services.AddAutoMapper(typeof(Program));
+
+        services.AddWebApiConfig();
+
+        // TODO: Mudar aqui para Serilog depois, pois usa o Elmah IO que é pago
+        //services.AddLogConfig(configuration);
+
+        services.ResolveDependencies();
+
+        services.AddOpenApiConfig();
+    }
+
+    public static void Configure(WebApplication app)
+    {
+        IWebHostEnvironment env = app.Environment;
+
+        if (env.IsDevelopment())
         {
-            Configuration = new ConfigurationBuilder().Build(env);
+            app.UseCors("Development");
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseCors("Production");
+            app.UseHsts();
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            // TODO: Mudar aqui para Serilog depois, pois usa o Elmah IO que é pago
+            //app.UseLogConfig();
         }
 
-        public IConfiguration Configuration { get; }
+        app.UseGlobalizationConfig();
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        app.UseOpenApiConfig();
 
-            services.AddIdentityConfig(Configuration);
-
-            services.AddAutoMapper(typeof(Startup));
-
-            services.AddSwaggerConfig();
-
-            services.AddWebApiConfig();
-
-            services.AddLogConfig(Configuration);
-
-            services.ResolveDependencies();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseCors("Development");
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseCors("Production");
-                app.UseHsts();
-                app.UseLogConfig();
-                app.UseMiddleware<ExceptionMiddleware>();
-            }
-
-            app.UseGlobalizationConfig();
-
-            app.UseSwaggerConfig(provider);
-
-            app.UseWebApiConfig();
-        }
+        app.UseWebApiConfig();
     }
 }
