@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
@@ -13,10 +14,56 @@ using System.Threading.Tasks;
 
 namespace DevIO.Api.Configurations
 {
-    public static class SwaggerConfig
+    public static class OpenApiConfig
     {
-        public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
+        public static IServiceCollection AddOpenApiConfig(this IServiceCollection services)
         {
+            services.AddSwaggerConfig();
+
+            ConfigureOpenApi(services);
+
+            return services;
+        }
+
+        public static WebApplication UseOpenApiConfig(this WebApplication app)
+        {
+            var versioningProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+            // /swagger
+            app.UseSwaggerConfig(versioningProvider);
+
+            // /openapi/{version_desired}.json
+            app.MapOpenApi();
+
+            // /api-docs
+            app.UseReDoc(options =>
+            {
+                options.SpecUrl("/openapi/v1.json");
+                options.SpecUrl("/openapi/v2.json");
+            });
+
+            // /scalar/{version_desired}
+            app.MapScalarApiReference();
+
+            return app;
+        }
+
+        private static IServiceCollection ConfigureOpenApi(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiVersioningProvider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
+
+            foreach (ApiVersionDescription descriptor in apiVersioningProvider.ApiVersionDescriptions)
+            {
+                services.AddOpenApi(descriptor.GroupName);
+            }
+
+            return services;
+        }
+
+        private static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
+        {
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(c =>
             {
                 c.OperationFilter<SwaggerDefaultValues>();
@@ -44,7 +91,7 @@ namespace DevIO.Api.Configurations
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -52,7 +99,7 @@ namespace DevIO.Api.Configurations
             return services;
         }
 
-        public static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
+        private static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
         {
             //app.UseMiddleware<SwaggerAuthorizedMiddleware>();
             app.UseSwagger();

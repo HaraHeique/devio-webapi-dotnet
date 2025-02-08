@@ -1,11 +1,8 @@
 ﻿using DevIO.Api.Extensions;
-using Elmah.Io.AspNetCore;
-using Elmah.Io.AspNetCore.HealthChecks;
 using Elmah.Io.Extensions.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 
 namespace DevIO.Api.Configurations
