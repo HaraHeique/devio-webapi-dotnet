@@ -1,4 +1,3 @@
-using Asp.Versioning.ApiExplorer;
 using DevIO.Api.Configurations;
 using DevIO.Api.Extensions;
 using DevIO.Data.Context;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace DevIO.Api;
 
-public static class Startup
+public class Startup
 {
     private const string ConnectionStringKey = "DefaultConnection";
 
@@ -57,5 +56,7 @@ public static class Startup
         app.UseOpenApiConfig();
 
         app.UseWebApiConfig();
+
+        app.RunMigrations();
     }
 }
