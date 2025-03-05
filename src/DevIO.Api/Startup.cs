@@ -1,9 +1,7 @@
 using DevIO.Api.Configurations;
 using DevIO.Api.Extensions;
-using DevIO.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,11 +10,11 @@ namespace DevIO.Api;
 
 public class Startup
 {
-    private const string ConnectionStringKey = "DefaultConnection";
-
-    public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureServices(WebApplicationBuilder builder)
     {
-        services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(configuration.GetConnectionString(ConnectionStringKey)));
+        IServiceCollection services = builder.Services;
+        IConfiguration configuration = builder.Configuration;
+        IWebHostEnvironment env = builder.Environment;
 
         services.AddIdentityConfig(configuration);
 
@@ -28,6 +26,8 @@ public class Startup
         //services.AddLogConfig(configuration);
 
         services.ResolveDependencies();
+
+        services.RegisterContextDependencies(configuration, env);
 
         services.AddOpenApiConfig();
     }

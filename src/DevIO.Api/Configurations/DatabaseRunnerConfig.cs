@@ -1,14 +1,34 @@
 ﻿using DevIO.Api.Data;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
 namespace DevIO.Api.Configurations
 {
+    public static class DatabaseSetupConfig
+    {
+        private const string ConnectionStringKey = "DefaultConnection";
+
+        public static IServiceCollection RegisterContextDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        {
+            string connString = configuration.GetConnectionString(ConnectionStringKey);
+
+            if (env.IsProduction())
+                services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
+            else
+                services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(connString));
+
+            return services;
+        }
+    }
+
     /// <summary>
     /// Generate migrations before running this method, you can use the following command:
     /// Nuget package manager: Add-Migration {desired_migration_name} -context {desired_context_class_name}
