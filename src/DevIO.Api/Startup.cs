@@ -16,7 +16,9 @@ public class Startup
         IConfiguration configuration = builder.Configuration;
         IWebHostEnvironment env = builder.Environment;
 
-        services.AddIdentityConfig(configuration);
+        builder.Configure();
+
+        services.AddIdentityConfig(configuration, env);
 
         services.AddAutoMapper(typeof(Program));
 

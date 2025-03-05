@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -6,20 +7,20 @@ namespace DevIO.Api.Configurations
 {
     public static class BuilderConfig
     {
-        public static IConfiguration Build(this ConfigurationBuilder builderConfig, IWebHostEnvironment hostingEnvironment)
+        public static void Configure(this WebApplicationBuilder appBuilder)
         {
-            var builder = builderConfig
-                .SetBasePath(hostingEnvironment.ContentRootPath)
+            var env = appBuilder.Environment;
+
+            var builder = appBuilder.Configuration
+                .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
 
-            if (hostingEnvironment.IsProduction())
+            if (env.IsProduction())
             {
                 builder.AddUserSecrets<Program>();
             }
-
-            return builder.Build();
         }
     }
 }

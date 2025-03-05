@@ -1,10 +1,13 @@
 ﻿using DevIO.Api.Data;
 using DevIO.Api.Extensions;
+using DevIO.Data.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -12,9 +15,14 @@ namespace DevIO.Api.Configurations
 {
     public static class IdentityConfig
     {
-        public static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
-            services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            string connString = configuration.GetConnectionString("DefaultConnection");
+
+            if (env.IsProduction())
+                services.AddDbContext<ApplicationDbContext>(opt => opt.UseNpgsql(connString));
+            else
+                services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connString));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
