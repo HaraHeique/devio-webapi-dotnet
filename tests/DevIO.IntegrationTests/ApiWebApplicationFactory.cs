@@ -27,6 +27,7 @@ namespace DevIO.IntegrationTests
 
         public ApiWebApplicationFactory()
         {
+            // TODO: MUDAR AQUI DE SQL SERVER PARA POSTEGRESQL
             // Para mais infos aqui: https://www.milanjovanovic.tech/blog/testcontainers-integration-testing-using-docker-in-dotnet
             _sqlServerContainer = new MsSqlBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2022-latest")

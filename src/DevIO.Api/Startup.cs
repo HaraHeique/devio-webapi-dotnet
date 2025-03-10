@@ -29,7 +29,7 @@ public class Startup
 
         services.ResolveDependencies();
 
-        services.RegisterContextDependencies(configuration, env);
+        services.RegisterDbContextDependencies(configuration, env);
 
         services.AddOpenApiConfig();
     }

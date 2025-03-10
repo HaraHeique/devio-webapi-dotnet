@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -16,14 +15,15 @@ namespace DevIO.Api.Configurations
     {
         private const string ConnectionStringKey = "DefaultConnection";
 
-        public static IServiceCollection RegisterContextDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        public static IServiceCollection RegisterDbContextDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
             string connString = configuration.GetConnectionString(ConnectionStringKey);
 
-            if (env.IsProduction())
-                services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
-            else
-                services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(connString));
+            services.AddDbContext<ApplicationDbContext>(opt => opt.UseNpgsql(connString));
+            services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
+
+            //services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connString));
+            //services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(connString));
 
             return services;
         }
