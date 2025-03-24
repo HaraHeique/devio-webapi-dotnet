@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace DevIO.Api.Configurations
 {
@@ -63,6 +64,9 @@ namespace DevIO.Api.Configurations
             var dataContext = provider.GetRequiredService<AppDataContext>();
             var identityContext = provider.GetRequiredService<ApplicationDbContext>();
             var logger = provider.GetRequiredService<ILogger<Startup>>();
+
+            // Esperar para o banco subir no docker-compose localmente
+            Thread.Sleep(5000);
 
             Execute(dataContext, logger);
             Execute(identityContext, logger);
