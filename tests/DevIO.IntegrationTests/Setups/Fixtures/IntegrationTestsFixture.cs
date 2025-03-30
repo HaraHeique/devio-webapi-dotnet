@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Respawn;
 using System.Net.Http;
 using System.Threading;
@@ -45,16 +46,18 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
 
         private async void ReseedDatabase()
         {
-            //var connectionString = Factory.Configuration.GetConnectionString("DefaultConnection");
-            var connectionString = Factory.ConnectionString;
-            var respawner = await Respawner.CreateAsync(connectionString, new RespawnerOptions
+            using var dbConnection = new NpgsqlConnection(Factory.ConnectionString);
+            await dbConnection.OpenAsync();
+            
+            var respawner = await Respawner.CreateAsync(dbConnection, new RespawnerOptions
             {
-                SchemasToInclude = ["dbo"],
+                SchemasToInclude = ["public"],
                 TablesToIgnore = ["__EFMigrationsHistory"],
-                WithReseed = true
+                WithReseed = true,
+                DbAdapter = DbAdapter.Postgres
             });
 
-            await respawner.ResetAsync(connectionString);
+            await respawner.ResetAsync(dbConnection);
         }
 
         private static void WaitFor(double seconds) => Thread.Sleep((int)seconds * 1000);

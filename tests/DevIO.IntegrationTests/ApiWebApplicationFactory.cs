@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Threading.Tasks;
 using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace DevIO.IntegrationTests
@@ -18,10 +19,11 @@ namespace DevIO.IntegrationTests
     public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         private readonly MsSqlContainer _sqlServerContainer;
+        private readonly PostgreSqlContainer _postgreSqlContainer;
 
         public const string EnvironmentName = "Testing";
 
-        public string ConnectionString => _sqlServerContainer.GetConnectionString();
+        public string ConnectionString => _postgreSqlContainer.GetConnectionString();
         public IConfiguration Configuration { get; private set; }
         public IWebHostEnvironment Env { get; private set; }
 
@@ -29,12 +31,21 @@ namespace DevIO.IntegrationTests
         {
             // TODO: MUDAR AQUI DE SQL SERVER PARA POSTEGRESQL
             // Para mais infos aqui: https://www.milanjovanovic.tech/blog/testcontainers-integration-testing-using-docker-in-dotnet
-            _sqlServerContainer = new MsSqlBuilder()
-                .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-                .WithName("app-web-api-completa-database")
-                .WithPassword("Admin@123")
-                .WithPortBinding(1433, 1433)
-                .WithEnvironment("ACCEPT_EULA", "Y")
+            //_sqlServerContainer = new MsSqlBuilder()
+            //    .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            //    .WithName("app-web-api-completa-database")
+            //    .WithPassword("Admin@123")
+            //    .WithPortBinding(1433, 1433)
+            //    .WithEnvironment("ACCEPT_EULA", "Y")
+            //    .WithCleanUp(true)
+            //    .Build();
+
+            _postgreSqlContainer = new PostgreSqlBuilder()
+                .WithImage("postgres:latest")
+                .WithDatabase("DevIOWebApiDotNetTests")
+                .WithUsername("postgres-tests")
+                .WithPassword("postgres-tests")
+                .WithCleanUp(true)
                 .Build();
         }
 
@@ -57,8 +68,8 @@ namespace DevIO.IntegrationTests
                 foreach (var item in descriptors) services.Remove(item);
 
                 services
-                    .AddDbContext<AppDataContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()))
-                    .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_sqlServerContainer.GetConnectionString()));
+                    .AddDbContext<AppDataContext>(options => options.UseNpgsql(_postgreSqlContainer.GetConnectionString()))
+                    .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(_postgreSqlContainer.GetConnectionString()));
 
                 services.RunMigrations();
             });
@@ -66,7 +77,7 @@ namespace DevIO.IntegrationTests
 
         public async Task InitializeAsync()
         {
-            await _sqlServerContainer.StartAsync();
+            await _postgreSqlContainer.StartAsync();
 
             // Posso também ler um script da base e montar a base dela
             //var migrationSql = await System.IO.File.ReadAllTextAsync("migration_aqui.sql");
@@ -75,7 +86,7 @@ namespace DevIO.IntegrationTests
 
         public async new Task DisposeAsync()
         {
-            await _sqlServerContainer.StopAsync();
+            await _postgreSqlContainer.StopAsync();
         }
     }
 }
