@@ -23,9 +23,6 @@ namespace DevIO.Api.Configurations
             services.AddDbContext<ApplicationDbContext>(opt => opt.UseNpgsql(connString));
             services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
 
-            //services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connString));
-            //services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(connString));
-
             return services;
         }
     }

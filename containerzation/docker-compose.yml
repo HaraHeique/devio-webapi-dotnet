@@ -1,0 +1,59 @@
+services:
+  devio-api:
+    image: devioapi:latest
+    container_name: devio-api
+    build:
+      context: ../
+      dockerfile: src/DevIO.Api/Dockerfile
+    ports:
+      - "443:8081"
+      - "80:8080"
+    restart: always
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=devio-api
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/devio-api-certificate.pfx
+    volumes:
+      - ./certs:/https:ro
+    depends_on:
+      - devio-database
+      - devio-cache
+
+  devio-database:
+    image: postgres:latest
+    container_name: devio-database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: DevIOWebApiDotNet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin-database:
+    image: dpage/pgadmin4
+    container_name: pgadmin-database
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@hotmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - devio-database
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  devio-cache:
+    image: redis:latest
+    container_name: devio-cache
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local

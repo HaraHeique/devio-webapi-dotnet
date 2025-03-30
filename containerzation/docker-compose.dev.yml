@@ -3,12 +3,22 @@ services:
     image: devioapi:latest
     container_name: devio-api
     build:
-      context: .
+      context: ../
       dockerfile: src/DevIO.Api/Dockerfile
     ports:
       - "443:8081"
       - "80:8080"
     restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__DefaultConnection=Host=devio-database;Port=5432;Database=DevIOWebApiDotNet;Username=postgres;Password=postgres;Include Error Detail=true;
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
       - devio-database
       - devio-cache
