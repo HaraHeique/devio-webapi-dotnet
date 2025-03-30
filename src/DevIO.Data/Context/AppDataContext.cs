@@ -55,6 +55,11 @@ namespace DevIO.Data.Context
             IEnumerable<IMutableProperty> decimalColumnsType = GetAllPropertiesByType(modelBuilder, typeof(decimal));
 
             foreach (var property in decimalColumnsType) property.SetColumnType("decimal(18,2)");
+
+            //Todas colunas DateTime serão timestamp without time zone no PostgreSql
+            IEnumerable<IMutableProperty> dateTimeTypes = GetAllPropertiesByType(modelBuilder, typeof(DateTime));
+
+            foreach (var property in dateTimeTypes) property.SetColumnType("timestamp without time zone");
         }
 
         private void SetDefaultBehaviorForeignKeys(ModelBuilder modelBuilder)
