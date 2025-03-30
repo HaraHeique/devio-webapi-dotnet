@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace DevIO.Api.Configurations
 {
@@ -16,14 +16,12 @@ namespace DevIO.Api.Configurations
     {
         private const string ConnectionStringKey = "DefaultConnection";
 
-        public static IServiceCollection RegisterContextDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        public static IServiceCollection RegisterDbContextDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
             string connString = configuration.GetConnectionString(ConnectionStringKey);
 
-            if (env.IsProduction())
-                services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
-            else
-                services.AddDbContext<AppDataContext>(opt => opt.UseSqlServer(connString));
+            services.AddDbContext<ApplicationDbContext>(opt => opt.UseNpgsql(connString));
+            services.AddDbContext<AppDataContext>(opt => opt.UseNpgsql(connString));
 
             return services;
         }
@@ -63,6 +61,9 @@ namespace DevIO.Api.Configurations
             var dataContext = provider.GetRequiredService<AppDataContext>();
             var identityContext = provider.GetRequiredService<ApplicationDbContext>();
             var logger = provider.GetRequiredService<ILogger<Startup>>();
+
+            // Esperar para o banco subir no docker-compose localmente
+            Thread.Sleep(5000);
 
             Execute(dataContext, logger);
             Execute(identityContext, logger);

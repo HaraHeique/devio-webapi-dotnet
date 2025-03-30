@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Docker Compose - Default": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "launchUrl": "swagger",
+      "serviceActions": {
+        "devio-api": "StartDebugging"
+      }
+    },
+    // Não funciona o profile abaixo. Para rodar basta executar: docker-compose -f docker-compose.dev.yml up --build
+    "Docker Compose - Dev": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "Launch",
+      "dockerComposeFile": "docker-compose.dev.yml"
+    }
+  }
+}
