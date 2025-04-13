@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TempFiles\teste_imagem_grande.png" />
     <None Remove="xunit.runner.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="TempFiles\teste_imagem_grande.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -37,10 +41,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DevIO.Api\DevIO.Api.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TempFiles\" />
   </ItemGroup>
 
 </Project>

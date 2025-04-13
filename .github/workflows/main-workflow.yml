@@ -1,4 +1,4 @@
-name: Devio Web Api branch main workflow CI/CD
+name: main workflow
 
 on:
   workflow_dispatch:

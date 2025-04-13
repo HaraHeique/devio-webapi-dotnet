@@ -39,7 +39,7 @@ namespace DevIO.IntegrationTests.Helpers
         public static (ProdutoImagemViewModel, Stream) ObterInstanciaParaImagemGrande(FornecedorViewModel fornecedorVM)
         {
             string directoryTempFile = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("bin\\"))),
+                Directory.GetCurrentDirectory(),
                 "TempFiles"
             );
 
