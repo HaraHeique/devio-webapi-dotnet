@@ -2,9 +2,9 @@ name: Devio Web Api branch main workflow CI/CD
 
 on:
   workflow_dispatch:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
 
 env:
   AZURE_WEBAPP_NAME: devio-api
