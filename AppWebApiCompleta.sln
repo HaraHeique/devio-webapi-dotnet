@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-
 		.gitignore = .gitignore
 		.github\workflows\main-workflow.yml = .github\workflows\main-workflow.yml
 		README.md = README.md
+		.github\workflows\secondary-workflow.yml = .github\workflows\secondary-workflow.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-requests", "api-requests", "{65E2A3D6-7B1C-4F36-BAAA-988ABA37DF97}"
