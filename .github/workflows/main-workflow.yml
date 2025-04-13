@@ -5,13 +5,18 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 env:
   AZURE_WEBAPP_NAME: devio-api
-  AZURE_WEBAPP_PACKAGE_PATH: "./DevIO.Api/publish"
+  AZURE_WEBAPP_PACKAGE_PATH: "./src/DevIO.Api/publish"
   DOTNET_VERSION: "9.x"
   SOLUTION_PATH: "AppWebApiCompleta.sln"
-  API_PR0JECT_PATH: "DevIO.Api"
+  UNIT_TESTS_PROJECT_PATH: "./tests/DevIO.UnitTests"
+  INTEGRATION_TESTS_PROJECT_PATH: "./tests/DevIO.IntegrationTests"
+  API_PR0JECT_PATH: "./src/DevIO.Api"
   PUBLISH_DIR: "./publish"
 
 jobs:
@@ -19,7 +24,8 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Grant access to Github repository
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -32,8 +38,11 @@ jobs:
       - name: Build
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
       
-      - name: Test
-        run: dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-restore --no-build --verbosity normal
+      - name: Unit Tests
+        run: dotnet test ${{ env.UNIT_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
+
+      - name: Integration Tests
+        run: dotnet test ${{ env.INTEGRATION_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
       
       - name: Publish
         run: dotnet publish ${{ env.API_PR0JECT_PATH }} --configuration Release --no-restore --no-build --property:PublishDir=${{ env.PUBLISH_DIR }}
