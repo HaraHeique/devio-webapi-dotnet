@@ -21,6 +21,8 @@ namespace DevIO.IntegrationTests
         private readonly MsSqlContainer _sqlServerContainer;
         private readonly PostgreSqlContainer _postgreSqlContainer;
 
+        private bool _migrationAlreadyApplied = false;
+
         public const string EnvironmentName = "Testing";
 
         public string ConnectionString => _postgreSqlContainer.GetConnectionString();
@@ -59,20 +61,29 @@ namespace DevIO.IntegrationTests
                 Env = context.HostingEnvironment;
             });
 
-            builder.ConfigureTestServices(services => 
+            builder.ConfigureTestServices(services =>
             {
                 var descriptors = services
                     .Where(s => s.ServiceType == typeof(DbContextOptions<AppDataContext>) || s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>))
-                    .ToList();   
+                    .ToList();
 
                 foreach (var item in descriptors) services.Remove(item);
 
                 services
                     .AddDbContext<AppDataContext>(options => options.UseNpgsql(_postgreSqlContainer.GetConnectionString()))
                     .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(_postgreSqlContainer.GetConnectionString()));
-
-                services.RunMigrations();
+                
+                RunMigrationsOnce(services);
             });
+        }
+
+        private void RunMigrationsOnce(IServiceCollection services)
+        {
+            if (_migrationAlreadyApplied) return;
+
+            services.RunMigrations();
+
+            _migrationAlreadyApplied = true;
         }
 
         public async Task InitializeAsync()
