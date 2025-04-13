@@ -62,9 +62,6 @@ namespace DevIO.Api.Configurations
             var identityContext = provider.GetRequiredService<ApplicationDbContext>();
             var logger = provider.GetRequiredService<ILogger<Startup>>();
 
-            // TODO: Melhorar isto aqui, mas é para esperar para o banco subir no docker-compose localmente
-            Thread.Sleep(5000);
-
             Execute(dataContext, logger);
             Execute(identityContext, logger);
 
