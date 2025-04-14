@@ -92,6 +92,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+          path: |
+            **/bin/Release/
+            **/obj/Release/
 
       - name: Executar testes unitários
         run: dotnet test ${{ env.UNIT_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
