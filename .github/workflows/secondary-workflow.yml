@@ -23,31 +23,6 @@ env:
   UNIT_TESTS_PROJECT_PATH: "./tests/DevIO.UnitTests"
   INTEGRATION_TESTS_PROJECT_PATH: "./tests/DevIO.IntegrationTests"
 
-#jobs:
-  # build-and-test:
-  #   name: Build and Test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Grant access to Github repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: ${{ env.DOTNET_VERSION }}
-        
-  #     - name: Restore
-  #       run: dotnet restore ${{ env.SOLUTION_PATH }}
-
-  #     - name: Build
-  #       run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
-      
-  #     - name: Unit Tests
-  #       run: dotnet test ${{ env.UNIT_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
-
-  #     - name: Integration Tests
-  #       run: dotnet test ${{ env.INTEGRATION_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
-
 jobs:
   build:
     name: Build
@@ -96,10 +71,5 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Baixar artefatos de build
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-
       - name: Executar testes de integração
-        run: dotnet test ${{ env.INTEGRATION_TESTS_PROJECT_PATH }} --configuration Release --no-restore --no-build --verbosity normal
+        run: dotnet test ${{ env.INTEGRATION_TESTS_PROJECT_PATH }} --configuration Release --verbosity normal
