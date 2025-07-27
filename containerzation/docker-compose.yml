@@ -10,8 +10,8 @@ services:
       - "80:8080"
     restart: always
     environment:
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=devio-api
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/devio-api-certificate.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${LOCAL_CERTIFICATE_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${LOCAL_CERTIFICATE_PATH}
     volumes:
       - ./certs:/https:ro
     depends_on:
@@ -23,9 +23,9 @@ services:
     container_name: devio-database
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: DevIOWebApiDotNet
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -36,8 +36,8 @@ services:
     container_name: pgadmin-database
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@hotmail.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
     ports:
       - "5050:80"
     depends_on:
