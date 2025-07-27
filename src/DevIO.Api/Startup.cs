@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace DevIO.Api;
 
@@ -34,7 +35,7 @@ public class Startup
         services.AddOpenApiConfig();
     }
 
-    public static void Configure(WebApplication app)
+    public static async Task Configure(WebApplication app)
     {
         IWebHostEnvironment env = app.Environment;
 
@@ -60,5 +61,7 @@ public class Startup
         app.UseWebApiConfig();
 
         app.RunMigrations();
+
+        await app.SeedSuperUserSystem(app.Configuration);
     }
 }
