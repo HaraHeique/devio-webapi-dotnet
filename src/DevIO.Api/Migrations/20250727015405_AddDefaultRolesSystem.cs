@@ -16,7 +16,7 @@ namespace DevIO.Api.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: ["Id", "Name", "NormalizedName", "ConcurrencyStamp"],
-                values: [IdGenerated, "Admin", "ADMIN", Guid.NewGuid().ToString()]
+                values: [IdGenerated.ToString(), "Admin", "ADMIN", Guid.NewGuid().ToString()]
             );
         }
 
@@ -26,7 +26,7 @@ namespace DevIO.Api.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: IdGenerated
+                keyValue: IdGenerated.ToString()
             );
         }
     }
