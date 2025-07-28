@@ -1,0 +1,170 @@
+﻿using Asp.Versioning;
+using DevIO.Api.ViewModels.Users;
+using DevIO.Business.Interfaces.Notifications;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DevIO.Api.Controllers.V1
+{
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/permissoes")]
+    [Authorize]
+    public class PermitionsController : MainController
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public PermitionsController(
+            INotificador notificador,
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        ) : base(notificador)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        [HttpGet("roles")]
+        public IActionResult GetAllRoles()
+        {
+            var roles = _roleManager.Roles.Select(r => new RoleViewModel
+            {
+                Id = r.Id,
+                Name = r.Name
+            }).ToArray();
+
+            return CustomResponse(roles);
+        }
+
+        [HttpPost("roles")]
+        public async Task<IActionResult> CreateRole([FromBody] RoleViewModel model)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            if (await _roleManager.RoleExistsAsync(model.Name))
+                return CustomErrorResponse("Role já existe.");
+
+            var result = await _roleManager.CreateAsync(new IdentityRole(model.Name));
+            if (!result.Succeeded)
+                return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray()); // TODO: Aqui pode melhorar fazendo um novo método na MainController com erros IdentityError igual o ModelStateDictionary 
+
+            return CustomResponse(model);
+        }
+
+        // 3. Deletar uma role (não permite se estiver associada a algum usuário)
+        [HttpDelete("roles/{roleId}")]
+        public async Task<ActionResult> DeleteRole(string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null)
+                return NotFound("Role não encontrada.");
+
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
+            if (usersInRole.Any())
+                return CustomErrorResponse("Não é possível remover uma role associada a usuários.");
+
+            var result = await _roleManager.DeleteAsync(role);
+            if (!result.Succeeded)
+                return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+
+            return CustomResponse();
+        }
+
+        // 4. Listar permissões (roles e claims) de um usuário por email ou id
+        [HttpGet("usuario-permissoes")]
+        public async Task<ActionResult> GetUserPermissions([FromQuery] string email = null, [FromQuery] string id = null)
+        {
+            IdentityUser user = null;
+            if (!string.IsNullOrEmpty(email))
+                user = await _userManager.FindByEmailAsync(email);
+            else if (!string.IsNullOrEmpty(id))
+                user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            var result = new UserPermitionsViewModel
+            {
+                UserId = user.Id,
+                Roles = roles.Select(r => new RoleViewModel { Name = r, Id = null }).ToArray(),
+                Claims = claims.Select(c => new ClaimsViewModel { Type = c.Type, Value = c.Value }).ToArray()
+            };
+
+            return CustomResponse(result);
+        }
+
+        // 5. Associar usuário a N roles ou N claims
+        [HttpPost("associar")]
+        public async Task<ActionResult> AssociateUser([FromBody] UserPermitionsViewModel model)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+
+            // Roles
+            if (model.Roles != null && model.Roles.Any())
+            {
+                var roleNames = model.Roles.Select(r => r.Name).ToArray();
+                var result = await _userManager.AddToRolesAsync(user, roleNames);
+                if (!result.Succeeded)
+                    return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            // Claims
+            if (model.Claims != null && model.Claims.Any())
+            {
+                var claims = model.Claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)).ToList();
+                foreach (var claim in claims)
+                {
+                    var result = await _userManager.AddClaimAsync(user, claim);
+                    if (!result.Succeeded)
+                        return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+                }
+            }
+
+            return CustomResponse();
+        }
+
+        // 6. Desassociar usuário de N roles ou N claims
+        [HttpPost("desassociar")]
+        public async Task<ActionResult> DisassociateUser([FromBody] UserPermitionsViewModel model)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+
+            // Roles
+            if (model.Roles != null && model.Roles.Any())
+            {
+                var roleNames = model.Roles.Select(r => r.Name).ToArray();
+                var result = await _userManager.RemoveFromRolesAsync(user, roleNames);
+                if (!result.Succeeded)
+                    return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            // Claims
+            if (model.Claims != null && model.Claims.Any())
+            {
+                var claims = model.Claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)).ToList();
+                foreach (var claim in claims)
+                {
+                    var result = await _userManager.RemoveClaimAsync(user, claim);
+                    if (!result.Succeeded)
+                        return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+                }
+            }
+
+            return CustomResponse();
+        }
+    }
+}
