@@ -7,8 +7,8 @@ namespace DevIO.Api.ViewModels.Users
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "O campo {0} é obrigatório")]
         public string UserId { get; set; }
-        public RoleViewModel[] Roles { get; set; }
-        public ClaimsViewModel[] Claims { get; set; }
+        public RoleViewModel[] Roles { get; set; } = [];
+        public ClaimsViewModel[] Claims { get; set; } = [];
     }
 
     public record RoleViewModel

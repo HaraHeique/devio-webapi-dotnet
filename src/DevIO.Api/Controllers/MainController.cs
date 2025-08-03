@@ -2,6 +2,7 @@
 using DevIO.Business.Interfaces.Identity;
 using DevIO.Business.Interfaces.Notifications;
 using DevIO.Business.Notifications;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
@@ -52,13 +53,25 @@ namespace DevIO.Api.Controllers
             return CustomResponse();
         }
 
-        protected ActionResult CustomErrorResponse(params string[] errors)
+        protected ActionResult CustomErrorResponse(params IEnumerable<string> errors)
         {
             if (errors == null) return CustomResponse();
 
             foreach (string error in errors)
             {
                 _notificador.Handle(new Notificacao(error));
+            }
+
+            return CustomResponse();
+        }
+        
+        protected ActionResult CustomResponse(IdentityResult result)
+        {
+            if (result.Succeeded) return CustomResponse();
+
+            foreach (var error in result.Errors)
+            {
+                _notificador.Handle(new Notificacao(error.Description));
             }
 
             return CustomResponse();
@@ -70,7 +83,7 @@ namespace DevIO.Api.Controllers
 
             return NotFound(new ResponseViewModel 
             {
-                Errors = new string[] { error },
+                Errors = [error],
                 Success = false
             });
         }

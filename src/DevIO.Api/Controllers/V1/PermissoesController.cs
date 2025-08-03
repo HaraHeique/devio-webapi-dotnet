@@ -48,43 +48,45 @@ namespace DevIO.Api.Controllers.V1
                 return CustomErrorResponse("Role já existe.");
 
             var result = await _roleManager.CreateAsync(new IdentityRole(model.Name));
+
             if (!result.Succeeded)
-                return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray()); // TODO: Aqui pode melhorar fazendo um novo método na MainController com erros IdentityError igual o ModelStateDictionary 
+                return CustomErrorResponse(result.Errors.Select(e => e.Description)); // TODO: Aqui pode melhorar fazendo um novo método na MainController com erros IdentityError igual o ModelStateDictionary 
 
             return CustomResponse(model);
         }
 
-        // 3. Deletar uma role (não permite se estiver associada a algum usuário)
         [HttpDelete("roles/{roleId}")]
         public async Task<ActionResult> DeleteRole(string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
+
             if (role == null)
                 return NotFound("Role não encontrada.");
 
             var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
+
             if (usersInRole.Any())
                 return CustomErrorResponse("Não é possível remover uma role associada a usuários.");
 
             var result = await _roleManager.DeleteAsync(role);
+
             if (!result.Succeeded)
-                return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
+                return CustomResponse(result);
 
             return CustomResponse();
         }
 
-        // 4. Listar permissões (roles e claims) de um usuário por email ou id
-        [HttpGet("usuario-permissoes")]
+        [HttpGet("por-usuario")]
         public async Task<ActionResult> GetUserPermissions([FromQuery] string email = null, [FromQuery] string id = null)
         {
             IdentityUser user = null;
+
             if (!string.IsNullOrEmpty(email))
                 user = await _userManager.FindByEmailAsync(email);
             else if (!string.IsNullOrEmpty(id))
                 user = await _userManager.FindByIdAsync(id);
 
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
+            if (user == null) return NotFound("Usuário não encontrado.");
 
             var roles = await _userManager.GetRolesAsync(user);
             var claims = await _userManager.GetClaimsAsync(user);
@@ -99,42 +101,48 @@ namespace DevIO.Api.Controllers.V1
             return CustomResponse(result);
         }
 
-        // 5. Associar usuário a N roles ou N claims
-        [HttpPost("associar")]
+        [HttpPost("associar-usuario")]
         public async Task<ActionResult> AssociateUser([FromBody] UserPermitionsViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
+
+            if (user == null) return NotFound("Usuário não encontrado.");
+
+            if (!model.Roles.Any() && !model.Claims.Any())
+                return CustomErrorResponse("Nenhuma role ou claim informada para associar ao usuário.");
 
             // Roles
-            if (model.Roles != null && model.Roles.Any())
-            {
-                var roleNames = model.Roles.Select(r => r.Name).ToArray();
-                var result = await _userManager.AddToRolesAsync(user, roleNames);
-                if (!result.Succeeded)
-                    return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
-            }
+            var result = await AssociateRole(model, user);
+
+            if (!result.Succeeded) return CustomResponse(result);
 
             // Claims
-            if (model.Claims != null && model.Claims.Any())
-            {
-                var claims = model.Claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)).ToList();
-                foreach (var claim in claims)
-                {
-                    var result = await _userManager.AddClaimAsync(user, claim);
-                    if (!result.Succeeded)
-                        return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
-                }
-            }
+            result = await AssociateClaims(model, user);
+
+            if (!result.Succeeded) return CustomResponse(result);
 
             return CustomResponse();
+
+            async Task<IdentityResult> AssociateRole(UserPermitionsViewModel model, IdentityUser user)
+            {
+                var roleNames = model.Roles.Select(r => r.Name).ToArray();
+
+                return await _userManager.AddToRolesAsync(user, roleNames);
+            }
+
+            async Task<IdentityResult> AssociateClaims(UserPermitionsViewModel model, IdentityUser user)
+            {
+                var claims = model.Claims
+                    .Select(c => new System.Security.Claims.Claim(c.Type, c.Value));
+
+                return await _userManager.AddClaimsAsync(user, claims);
+            }
         }
 
         // 6. Desassociar usuário de N roles ou N claims
-        [HttpPost("desassociar")]
+        [HttpPost("desassociar-usuario")]
         public async Task<ActionResult> DisassociateUser([FromBody] UserPermitionsViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
