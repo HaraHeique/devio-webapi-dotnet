@@ -49,8 +49,7 @@ namespace DevIO.Api.Controllers.V1
 
             var result = await _roleManager.CreateAsync(new IdentityRole(model.Name));
 
-            if (!result.Succeeded)
-                return CustomErrorResponse(result.Errors.Select(e => e.Description)); // TODO: Aqui pode melhorar fazendo um novo método na MainController com erros IdentityError igual o ModelStateDictionary 
+            if (!result.Succeeded) return CustomResponse(result);
 
             return CustomResponse(model);
         }
@@ -114,7 +113,7 @@ namespace DevIO.Api.Controllers.V1
                 return CustomErrorResponse("Nenhuma role ou claim informada para associar ao usuário.");
 
             // Roles
-            var result = await AssociateRole(model, user);
+            var result = await AssociateRoles(model, user);
 
             if (!result.Succeeded) return CustomResponse(result);
 
@@ -125,7 +124,7 @@ namespace DevIO.Api.Controllers.V1
 
             return CustomResponse();
 
-            async Task<IdentityResult> AssociateRole(UserPermitionsViewModel model, IdentityUser user)
+            async Task<IdentityResult> AssociateRoles(UserPermitionsViewModel model, IdentityUser user)
             {
                 var roleNames = model.Roles.Select(r => r.Name).ToArray();
 
@@ -141,38 +140,43 @@ namespace DevIO.Api.Controllers.V1
             }
         }
 
-        // 6. Desassociar usuário de N roles ou N claims
-        [HttpPost("desassociar-usuario")]
+        [HttpDelete("desassociar-usuario")]
         public async Task<ActionResult> DisassociateUser([FromBody] UserPermitionsViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
+
+            if (user == null) return NotFound("Usuário não encontrado.");
+
+            if (!model.Roles.Any() && !model.Claims.Any())
+                return CustomErrorResponse("Nenhuma role ou claim informada para associar ao usuário.");
 
             // Roles
-            if (model.Roles != null && model.Roles.Any())
-            {
-                var roleNames = model.Roles.Select(r => r.Name).ToArray();
-                var result = await _userManager.RemoveFromRolesAsync(user, roleNames);
-                if (!result.Succeeded)
-                    return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
-            }
+            var roleResult = await DesassociateRoles(model, user);
+            if (!roleResult.Succeeded) return CustomResponse(roleResult);
 
             // Claims
-            if (model.Claims != null && model.Claims.Any())
-            {
-                var claims = model.Claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)).ToList();
-                foreach (var claim in claims)
-                {
-                    var result = await _userManager.RemoveClaimAsync(user, claim);
-                    if (!result.Succeeded)
-                        return CustomErrorResponse(result.Errors.Select(e => e.Description).ToArray());
-                }
-            }
+            var claimsResult = await DesassociateClaims(model, user);
+            if (!claimsResult.Succeeded) return CustomResponse(claimsResult);
 
             return CustomResponse();
+
+            async Task<IdentityResult> DesassociateRoles(UserPermitionsViewModel model, IdentityUser user)
+            {
+                var roleNames = model.Roles.Select(r => r.Name);
+                claimsResult = await _userManager.RemoveFromRolesAsync(user, roleNames);
+
+                return claimsResult;
+            }
+            
+            async Task<IdentityResult> DesassociateClaims(UserPermitionsViewModel model, IdentityUser user)
+            {
+                var claims = model.Claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)).ToList();
+                var result = await _userManager.RemoveClaimsAsync(user, claims);
+
+                return result;
+            }
         }
     }
 }
