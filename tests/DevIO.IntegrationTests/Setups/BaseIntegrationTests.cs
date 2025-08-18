@@ -1,27 +1,35 @@
 ﻿using DevIO.IntegrationTests.Setups.Auth;
+using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Respawn;
+using System;
 using System.Net.Http;
 using System.Threading;
 using Xunit;
 
-namespace DevIO.IntegrationTests.Setups.Fixtures
+namespace DevIO.IntegrationTests.Setups
 {
     [Collection(nameof(InfraSingleInstanceCollection))]
-    public abstract class IntegrationTestsFixture //: IClassFixture<ApiWebApplicationFactory> (para cada instancia da class que a herda)
+    public abstract class BaseIntegrationTests : IDisposable
+        //: IClassFixture<ApiWebApplicationFactory> (para cada instancia da class que a herda)
     {
+        private readonly IServiceScope _scope;
+
         protected readonly ApiWebApplicationFactory Factory;
         protected readonly HttpClient Client;
+        protected IServiceProvider ServiceProvider => _scope.ServiceProvider;
 
-        public IntegrationTestsFixture(ApiWebApplicationFactory factory)
+        public BaseIntegrationTests(ApiWebApplicationFactory factory)
         {
             Factory = factory;
             Client = CreateClient();
-            ReseedDatabase();
+            
+            _scope = Factory.Services.CreateScope();
 
+            ReseedDatabase();
             WaitFor(1); // Existe por conta do ReseedDb acima ser assíncrono
         }
 
@@ -61,5 +69,10 @@ namespace DevIO.IntegrationTests.Setups.Fixtures
         }
 
         private static void WaitFor(double seconds) => Thread.Sleep((int)seconds * 1000);
+
+        public void Dispose()
+        {
+            _scope.Dispose();
+        }
     }
 }

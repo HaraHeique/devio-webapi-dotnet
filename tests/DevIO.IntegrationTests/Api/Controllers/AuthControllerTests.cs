@@ -1,6 +1,7 @@
 ﻿using DevIO.Api.ViewModels;
 using DevIO.Api.ViewModels.Users;
 using DevIO.IntegrationTests.Helpers;
+using DevIO.IntegrationTests.Setups;
 using DevIO.IntegrationTests.Setups.Auth;
 using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +17,7 @@ using Xunit;
 namespace DevIO.IntegrationTests.Api.Controllers
 {
     [Collection(nameof(InfraSingleInstanceCollection))]
-    public class AuthControllerTests : IntegrationTestsFixture, IDisposable
+    public class AuthControllerTests : BaseIntegrationTests, IDisposable
     {
         private const string CommonUri = "api/v2/conta";
 

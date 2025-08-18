@@ -3,7 +3,7 @@ using DevIO.Api.ViewModels;
 using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Models;
 using DevIO.IntegrationTests.Helpers;
-using DevIO.IntegrationTests.Setups.Fixtures;
+using DevIO.IntegrationTests.Setups;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
@@ -15,7 +15,7 @@ using Xunit;
 
 namespace DevIO.IntegrationTests.Api.Controllers
 {
-    public class ProdutosControllerTests : IntegrationTestsFixture
+    public class ProdutosControllerTests : BaseIntegrationTests
     {
         private const string CommonUri = "api/v2/produtos";
 

@@ -3,8 +3,8 @@ using DevIO.Api.ViewModels;
 using DevIO.Business.Interfaces.Repositories;
 using DevIO.Business.Models;
 using DevIO.IntegrationTests.Helpers;
+using DevIO.IntegrationTests.Setups;
 using DevIO.IntegrationTests.Setups.Auth;
-using DevIO.IntegrationTests.Setups.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
@@ -15,7 +15,7 @@ using Xunit;
 
 namespace DevIO.IntegrationTests.Api.Controllers
 {
-    public class FornecedoresControllerTests : IntegrationTestsFixture
+    public class FornecedoresControllerTests : BaseIntegrationTests
     {
         private const string CommonUri = "api/v2/fornecedores";
 

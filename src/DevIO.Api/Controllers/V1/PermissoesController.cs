@@ -11,13 +11,13 @@ namespace DevIO.Api.Controllers.V1
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/permissoes")]
-    [Authorize]
-    public class PermitionsController : MainController
+    [Authorize(Roles = "Admin")]
+    public class PermissoesController : MainController
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public PermitionsController(
+        public PermissoesController(
             INotificador notificador,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager
@@ -27,8 +27,8 @@ namespace DevIO.Api.Controllers.V1
             _roleManager = roleManager;
         }
 
-        [HttpGet("roles")]
-        public IActionResult GetAllRoles()
+        [HttpGet("roles")]        
+        public IActionResult ObterTodasRoles()
         {
             var roles = _roleManager.Roles.Select(r => new RoleViewModel
             {
@@ -40,7 +40,7 @@ namespace DevIO.Api.Controllers.V1
         }
 
         [HttpPost("roles")]
-        public async Task<IActionResult> CreateRole([FromBody] RoleViewModel model)
+        public async Task<IActionResult> CriarRole([FromBody] RoleViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
@@ -55,7 +55,7 @@ namespace DevIO.Api.Controllers.V1
         }
 
         [HttpDelete("roles/{roleId}")]
-        public async Task<ActionResult> DeleteRole(string roleId)
+        public async Task<ActionResult> DeletarRole(string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
 
@@ -76,7 +76,7 @@ namespace DevIO.Api.Controllers.V1
         }
 
         [HttpGet("por-usuario")]
-        public async Task<ActionResult> GetUserPermissions([FromQuery] string email = null, [FromQuery] string id = null)
+        public async Task<ActionResult> ObterPermissoesUsuario([FromQuery] string email = null, [FromQuery] string id = null)
         {
             IdentityUser user = null;
 
@@ -101,7 +101,7 @@ namespace DevIO.Api.Controllers.V1
         }
 
         [HttpPost("associar-usuario")]
-        public async Task<ActionResult> AssociateUser([FromBody] UserPermitionsViewModel model)
+        public async Task<ActionResult> AssociarUsuario([FromBody] UserPermitionsViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
@@ -141,7 +141,7 @@ namespace DevIO.Api.Controllers.V1
         }
 
         [HttpDelete("desassociar-usuario")]
-        public async Task<ActionResult> DisassociateUser([FromBody] UserPermitionsViewModel model)
+        public async Task<ActionResult> DisassociarUsuario([FromBody] UserPermitionsViewModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
